@@ -15,8 +15,8 @@ import java.util.Properties;
  */
 
 public class MovieDB {
-	private static String userName = "mmuppa"; //Change to yours
-	private static String password = "mysqlpassword";
+	private static String userName = "demyan15"; //Change to yours
+	private static String password = "ununItHo";
 	private static String serverName = "cssgate.insttech.washington.edu";
 	private static Connection conn;
 	private List<Movie> list;
