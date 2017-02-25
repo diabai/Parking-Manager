@@ -79,9 +79,20 @@ public class SystemGUI extends JFrame implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent arg0) {
-        // TODO Auto-generated method stub
-        
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == resVisitorBtn) 
+        {
+            
+        }
+        else if (e.getSource() == resEmployeeBtn)
+        {
+
+        }
+        else if (e.getSource() == updateEmployeeBtn)
+        {
+
+        }
+
     }
     
     
