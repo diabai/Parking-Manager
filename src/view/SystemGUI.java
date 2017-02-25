@@ -20,7 +20,7 @@ public class SystemGUI extends JFrame implements ActionListener {
     private static final long serialVersionUID = 6515753873615102989L;
     
     /** Buttons for reserving parking spots and updating employees. */
-    private JButton resVisitorBtn, resEmployeeBtn, updateEmployeeBtn;
+    private JButton resVisitorBtn, resEmployeeBtn, updateEmployeeBtn, addParkingLot, addEmployee, addParkingSpace;
     
     /** Table that contains information from database. */
     private JTable staffTable, parkingSpotTable;
@@ -52,6 +52,10 @@ public class SystemGUI extends JFrame implements ActionListener {
         
         upperPnl = new JPanel();
         
+        //settings its layout to have a capacity of 2 rows and 3 colums
+        // 5 is the space between the buttons
+        upperPnl.setLayout(new GridLayout(2,3,5,5));
+        
         // Reserve Visitor Parking Spot Button
         resVisitorBtn = new JButton("Reserve Visitor Parking");
         resVisitorBtn.addActionListener(this);
@@ -66,6 +70,22 @@ public class SystemGUI extends JFrame implements ActionListener {
         updateEmployeeBtn = new JButton("Update Employee");
         updateEmployeeBtn.addActionListener(this);
         upperPnl.add(updateEmployeeBtn);
+        
+        //Add parking lot button
+        
+        addParkingLot = new JButton("Add parking lot");
+        addParkingLot.addActionListener(this);
+        upperPnl.add(addParkingLot);
+        
+        //Add employee
+        addEmployee = new JButton("Add employee");
+        addEmployee.addActionListener(this);
+        upperPnl.add(addEmployee);
+        
+        //Add parking space
+        addParkingSpace = new JButton("Add parking space");
+        addParkingSpace.addActionListener(this);
+        upperPnl.add(addParkingSpace);
         
         return upperPnl;
     }
@@ -133,6 +153,15 @@ public class SystemGUI extends JFrame implements ActionListener {
         else if (e.getSource() == updateEmployeeBtn)
         {
 
+        }else if (e.getSource() == addParkingLot)
+        {
+
+        }
+        else if (e.getSource() == addEmployee)
+        {
+
+        } else if (e.getSource() == addParkingSpace) {
+        	
         }
 
     }
