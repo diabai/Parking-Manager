@@ -87,6 +87,22 @@ public class SystemGUI extends JFrame implements ActionListener {
         addParkingSpace.addActionListener(this);
         upperPnl.add(addParkingSpace);
         
+        //Add parking lot button
+        
+        addParkingLot = new JButton("Add parking lot");
+        addParkingLot.addActionListener(this);
+        upperPnl.add(addParkingLot);
+        
+        //Add employee
+        addEmployee = new JButton("Add employee");
+        addEmployee.addActionListener(this);
+        upperPnl.add(addEmployee);
+        
+        //Add parking space
+        addParkingSpace = new JButton("Add parking space");
+        addParkingSpace.addActionListener(this);
+        upperPnl.add(addParkingSpace);
+        
         return upperPnl;
     }
     

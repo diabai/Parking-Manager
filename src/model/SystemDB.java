@@ -16,7 +16,7 @@ public class SystemDB {
     private static String password = "ununItHo";
     private static String serverName = "cssgate.insttech.washington.edu";
     private static Connection conn;
-    private List<employee> list;
+    private List<Employee> list;
 
     /**
      * Creates a sql connection to MySQL using the properties for
@@ -39,7 +39,7 @@ public class SystemDB {
      * @return list of employees
      * @throws SQLException
      */
-    public List<employee> getEmployees() throws SQLException {
+    public List<Employee> getEmployees() throws SQLException {
         if (conn == null) {
             createConnection();
         }
@@ -47,7 +47,7 @@ public class SystemDB {
         String query = "select empNumber, name, extNum, vehicleLicense "
                 + "from demyan15.employee ";
 
-        list = new ArrayList<employee>();
+        list = new ArrayList<Employee>();
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
@@ -56,7 +56,7 @@ public class SystemDB {
                 String name = rs.getString("name");
                 int extNum = rs.getInt("extNum");
                 String genre = rs.getString("vehicleLicense");
-                employee emp = new employee(ID, name, extNum, genre);
+                Employee emp = new Employee(ID, name, extNum, genre);
                 list.add(emp);
             }
         } catch (SQLException e) {
@@ -77,9 +77,8 @@ public class SystemDB {
      */
     public void updateEmployee(int row, String columnName, Object data) {
         
-        employee movie = list.get(row);
-        String title = movie.getTitle();
-        int year = movie.getYear();
+        Employee employee = list.get(row);
+        int empNum = employee.getmEmpNumber();
         String sql = "update demyan15.employee set " + columnName + " = ?  where empNumber = ? ";
         System.out.println(sql);
         PreparedStatement preparedStatement = null;
@@ -89,8 +88,7 @@ public class SystemDB {
                 preparedStatement.setString(1, (String) data);
             else if (data instanceof Integer)
                 preparedStatement.setInt(1, (Integer) data);
-            preparedStatement.setString(2, title);
-            preparedStatement.setInt(3, year);
+            preparedStatement.setInt(2, empNum);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e);
@@ -99,33 +97,4 @@ public class SystemDB {
         
     }
     
-    /**
-     * Modifies the movie information corresponding to the index in the list.
-     * @param row index of the element in the list
-     * @param columnName attribute to modify
-     * @param data value to supply
-     */
-    public void updateEmployee(int row, String columnName, Object data) {
-        
-        employee movie = list.get(row);
-        String title = movie.getTitle();
-        int year = movie.getYear();
-        String sql = "update demyan15.employee set " + columnName + " = ?  where empNumber = ? ";
-        System.out.println(sql);
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = conn.prepareStatement(sql);
-            if (data instanceof String)
-                preparedStatement.setString(1, (String) data);
-            else if (data instanceof Integer)
-                preparedStatement.setInt(1, (Integer) data);
-            preparedStatement.setString(2, title);
-            preparedStatement.setInt(3, year);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e);
-            e.printStackTrace();
-        } 
-        
-    }
 }
