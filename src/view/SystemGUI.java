@@ -1,14 +1,18 @@
 package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 public class SystemGUI extends JFrame implements ActionListener {
 
@@ -77,12 +81,50 @@ public class SystemGUI extends JFrame implements ActionListener {
         
         return staffTblePnl;
     }
+    
+    /** Shows the panel needed for reserving a parking spot for visitors. */
+    private JPanel createResVisitorPnl() {
+        JPanel visInfoPanel = new JPanel(new GridLayout(6, 0));
+        String visLabels[] = {"Visitor's Vehicle License Number: ",  "Sponsor's Employee ID", "Choose Parking Spot", "Choose Date", "Choose Times"};
+        JTextField fields[] = new JTextField[2];
+        
+        for (int i=0; i<visLabels.length; i++) {
+            JPanel panel = new JPanel(new GridLayout(1, 2));
+            JLabel label = new JLabel(visLabels[i]);
+            panel.add(label);
+            if (i < 2) {
+                fields[i] = new JTextField(25);
+                panel.add(fields[i]);
+            }            
+            visInfoPanel.add(panel);
+        }
+        
+        JButton makeResBtn = new JButton("Make Reservation");
+        makeResBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                // Create reservation class, make DB call
+                JOptionPane.showMessageDialog(null, fields[0]);               
+            }
+            
+        });
+        
+        visInfoPanel.add(makeResBtn);
+        
+        return visInfoPanel;
+        
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == resVisitorBtn) 
         {
-            
+            mainPnl.removeAll();
+            mainPnl.add(createResVisitorPnl());
+            mainPnl.revalidate();
+            this.repaint();
         }
         else if (e.getSource() == resEmployeeBtn)
         {

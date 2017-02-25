@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -66,5 +67,65 @@ public class SystemDB {
             }
         }
         return list;
+    }
+    
+    /**
+     * Modifies the movie information corresponding to the index in the list.
+     * @param row index of the element in the list
+     * @param columnName attribute to modify
+     * @param data value to supply
+     */
+    public void updateEmployee(int row, String columnName, Object data) {
+        
+        employee movie = list.get(row);
+        String title = movie.getTitle();
+        int year = movie.getYear();
+        String sql = "update demyan15.employee set " + columnName + " = ?  where empNumber = ? ";
+        System.out.println(sql);
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = conn.prepareStatement(sql);
+            if (data instanceof String)
+                preparedStatement.setString(1, (String) data);
+            else if (data instanceof Integer)
+                preparedStatement.setInt(1, (Integer) data);
+            preparedStatement.setString(2, title);
+            preparedStatement.setInt(3, year);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        } 
+        
+    }
+    
+    /**
+     * Modifies the movie information corresponding to the index in the list.
+     * @param row index of the element in the list
+     * @param columnName attribute to modify
+     * @param data value to supply
+     */
+    public void updateEmployee(int row, String columnName, Object data) {
+        
+        employee movie = list.get(row);
+        String title = movie.getTitle();
+        int year = movie.getYear();
+        String sql = "update demyan15.employee set " + columnName + " = ?  where empNumber = ? ";
+        System.out.println(sql);
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = conn.prepareStatement(sql);
+            if (data instanceof String)
+                preparedStatement.setString(1, (String) data);
+            else if (data instanceof Integer)
+                preparedStatement.setInt(1, (Integer) data);
+            preparedStatement.setString(2, title);
+            preparedStatement.setInt(3, year);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        } 
+        
     }
 }
