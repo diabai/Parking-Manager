@@ -8,13 +8,13 @@ public class VisitorReservation {
     
     private String visitorsVehLicense;
     private int spaceNum;
-    private int pLName;
+    private String pLName;
     private int empNumber;
     private int visitorID;
     private Date date;
     private Time time;
         
-    public VisitorReservation(String theVisitorsVehLicense, int theSpaceNum, int thePLName, int theEmpNumber, 
+    public VisitorReservation(String theVisitorsVehLicense, int theSpaceNum, String thePLName, int theEmpNumber, 
             Date theDate, Time theTime) {
         visitorsVehLicense = theVisitorsVehLicense;
         spaceNum = theSpaceNum;
@@ -56,7 +56,7 @@ public class VisitorReservation {
     /**
      * @return the pLName
      */
-    public int getpLName() {
+    public String getpLName() {
         return pLName;
     }
 

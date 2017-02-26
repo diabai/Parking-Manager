@@ -4,10 +4,15 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,12 +24,16 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import model.Employee;
+import model.ParkingLot;
 import model.SystemDB;
+import model.VisitorReservation;
+import model.ParkingSpace;
 
 public class SystemGUI extends JFrame implements ActionListener, TableModelListener {
     
     private SystemDB db;
     private List<Employee> employeeList;
+    List<ParkingSpace> spotsList;
     private Object[][] currTableData;
 
     /** For Serialization.*/
@@ -40,6 +49,9 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
     
     /** Main panels that divide the GUI window. */
     private JPanel upperPnl, pnlContent, staffTblePnl, pkSpotTblPnl;
+    
+    /** Combo boxes for reserving parking spots. */
+    private JComboBox PLlocation, PLSpot, resDate, resTime;
 
     public SystemGUI()  {
         super("ParkingApplication");
@@ -152,7 +164,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
     /** Shows the panel needed for reserving a parking spot for visitors. */
     private JPanel createResVisitorPnl() {
         JPanel visInfoPanel = new JPanel(new GridLayout(6, 0));
-        String visLabels[] = {"Visitor's Vehicle License Number: ",  "Sponsor's Employee ID", "Choose Parking Spot", "Choose Date", "Choose Times"};
+        String visLabels[] = {"Visitor's Vehicle License Number: ",  "Sponsor's Employee ID", "Choose Date", "Choose Times"};
         JTextField fields[] = new JTextField[2];
         
         for (int i=0; i<visLabels.length; i++) {
@@ -165,15 +177,86 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
             }            
             visInfoPanel.add(panel);
         }
+
+        // Set up empty parking lot, space, date, and time combo boxes - will be updated as user progressively makes selections    
+        // Parking Lot
+        JPanel pLComboPanel = new JPanel();
+        pLComboPanel.setLayout(new GridLayout(1, 2));
+        List<ParkingLot> lots = new ArrayList<ParkingLot>();
+        try {
+            lots = db.getParkingLots();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        spotsList = new ArrayList<ParkingSpace>();
+        // Convert to an object
+        Object[] PLlocations = new Object[lots.size()];
+        for (int i = 0; i < lots.size(); i++) {
+            PLlocations[i] = lots.get(i);  
+        }
+        PLlocation = new JComboBox(PLlocations);
+        pLComboPanel.add(new JLabel("Choose Parking Location: "));
+        PLlocation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PLSpot.removeAllItems();
+                try {
+                    spotsList = db.getParkingSpaces((ParkingLot)PLlocation.getSelectedItem());
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+                for (int i = 0; i < spotsList.size(); i++) {
+                    PLSpot.addItem(spotsList.get(i));  
+                }               
+            }
+
+        });
+        pLComboPanel.add(PLlocation);
+        visInfoPanel.add(pLComboPanel);
+
+        // Parking Spot
+        JPanel spotsComboPanel = new JPanel();
+        spotsComboPanel.setLayout(new GridLayout(1, 2));
+        PLSpot = new JComboBox();
+        spotsComboPanel.add(new JLabel("Choose Parking Spot: "));
+        PLSpot.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Maybe will need to check whether something is selected before loading next information?  
+                JOptionPane.showConfirmDialog(null, createAvailableTimesPnl());
+            }
+
+        });
+        spotsComboPanel.add(PLSpot);
+        visInfoPanel.add(spotsComboPanel);
+
+        // Date
+        JPanel datePnl = new JPanel();
+        JTextField date = new JTextField(15);
+        datePnl.setLayout(new GridLayout(1, 2));
+        datePnl.add(new JLabel("Choose Date: "));
+        datePnl.add(date);
+        visInfoPanel.add(datePnl);
+        
+        // Time
+        JPanel timesPnl = new JPanel();
+        JTextField time = new JTextField(15);
+        timesPnl.setLayout(new GridLayout(1, 2));
+        timesPnl.add(new JLabel("Choose Time: "));
+        timesPnl.add(time);
+        visInfoPanel.add(timesPnl);
         
         JButton makeResBtn = new JButton("Make Reservation");
         makeResBtn.addActionListener(new ActionListener() {
-
             @Override
-            public void actionPerformed(ActionEvent e) {
-                
+            public void actionPerformed(ActionEvent e) {                
                 // Create reservation class, make DB call
-                JOptionPane.showMessageDialog(null, fields[0]);               
+                Date datee = Date.valueOf(date.toString());
+                Time timee = Time.valueOf(time.toString());
+                int employeeNumber = Integer.parseInt(fields[1].getText());
+                VisitorReservation rsvtion = new VisitorReservation(fields[0].getText(), ((ParkingSpace)PLSpot.getSelectedItem()).getSpaceNum(), 
+                        ((ParkingLot)PLlocation.getSelectedItem()).getpLName(), employeeNumber, datee, timee);
+                db.addVisitorReservation(rsvtion);           
             }
             
         });
@@ -182,6 +265,15 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         
         return visInfoPanel;
         
+    }
+    
+    /**
+     * Displays the reservation times already on the parking spot. 
+     * @return
+     */
+    public JPanel createAvailableTimesPnl() {
+        JPanel mainPanel = new JPanel();
+        return mainPanel;
     }
 
     @Override
