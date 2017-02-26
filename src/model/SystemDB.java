@@ -10,13 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import data.DataConnection;
+import item.Item;
+
 public class SystemDB {
     
     private static String userName = "demyan15"; //Change to yours
     private static String password = "ununItHo";
     private static String serverName = "cssgate.insttech.washington.edu";
     private static Connection conn;
-    private List<Employee> list;
+    private List<Employee> employeeList;
+    private List<ParkingLot> lotList;
 
     /**
      * Creates a sql connection to MySQL using the properties for
@@ -45,9 +49,9 @@ public class SystemDB {
         }
         Statement stmt = null;
         String query = "select empNumber, name, extNum, vehicleLicense "
-                + "from demyan15.employee ";
+                + "from employee ";
 
-        list = new ArrayList<Employee>();
+        employeeList = new ArrayList<Employee>();
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
@@ -57,7 +61,7 @@ public class SystemDB {
                 int extNum = rs.getInt("extNum");
                 String genre = rs.getString("vehicleLicense");
                 Employee emp = new Employee(ID, name, extNum, genre);
-                list.add(emp);
+                employeeList.add(emp);
             }
         } catch (SQLException e) {
             System.out.println(e);
@@ -66,7 +70,75 @@ public class SystemDB {
                 stmt.close();
             }
         }
-        return list;
+        return employeeList;
+    }
+    
+    /**
+     * Returns a list of Parking Location objects from the database.
+     * @return list of employees
+     * @throws SQLException
+     */
+    public List<ParkingLot> getParkingLots() throws SQLException {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "select pLName, location, capacity, numFloors "
+                + "from parkingLot ";
+
+        lotList = new ArrayList<ParkingLot>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                String name = rs.getString("pLName");
+                String location = rs.getString("location");
+                int capacity = rs.getInt("capacity");
+                int numFloors = rs.getInt("numFloors");
+                ParkingLot emp = new ParkingLot(name, location, capacity, numFloors);
+                employeeList.add(emp);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return lotList;
+    }
+    
+    /**
+     * Returns a list of Parking Location objects from the database.
+     * @return list of employees
+     * @throws SQLException
+     */
+    public List<ParkingSpace> getParkingSpaces(ParkingLot lot) throws SQLException {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "select spaceNum, covered"
+                + "from parkingSpace where PLName = " + lot.getName();
+
+        List<ParkingSpace> spaces = new ArrayList<ParkingSpace>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                String number = rs.getString("spaceNum");
+                String covered = rs.getString("covered");            
+                ParkingSpot emp = new ParkingSpot(number, covered, lot.getName());
+                spaces.add(emp);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return spaces;
     }
     
     /**
@@ -77,9 +149,9 @@ public class SystemDB {
      */
     public void updateEmployee(int row, String columnName, Object data) {
         
-        Employee employee = list.get(row);
+        Employee employee = employeeList.get(row);
         int empNum = employee.getmEmpNumber();
-        String sql = "update demyan15.employee set " + columnName + " = ?  where empNumber = ? ";
+        String sql = "update employee set " + columnName + " = ?  where empNumber = ? ";
         System.out.println(sql);
         PreparedStatement preparedStatement = null;
         try {
@@ -95,6 +167,71 @@ public class SystemDB {
             e.printStackTrace();
         } 
         
+    }
+    
+    /**
+     * Adds a new reservation to the VisitorReservation table. 
+     * @param reservation the reservation to add.
+     * @return Returns true or false depending on success..
+     */
+    public boolean addVisitorReservation(VisitorReservation reservation) {
+        if (reservation == null) {
+            throw new IllegalArgumentException();
+        }
+        String sql = "insert into visitorReservation(visitorsVehLicense, spaceNum, pLName, empNumber, `date`, `time`) values "
+                + "(?, ?, ?, ?, ?, ?); ";
+
+        if (conn == null) {
+            createConnection();
+        }
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, reservation.getVisitorsVehLicense());
+            preparedStatement.setInt(2, reservation.getSpaceNum());
+            preparedStatement.setDouble(3, reservation.getpLName());
+            preparedStatement.setInt(4, reservation.getEmpNumber());
+            preparedStatement.setDate(5, reservation.getDate());
+            preparedStatement.setTime(6, reservation.getTime());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Adds a new reservation to the EmployeeReservation table. 
+     * @param reservation the reservation to add.
+     * @return Returns true or false depending on success..
+     */
+    public boolean addEmployeeReservation(EmployeeReservation reservation) {
+        if (reservation == null) {
+            throw new IllegalArgumentException();
+        }
+        String sql = "insert into employeeReservation(vehicleLicense, rate, spaceNum, pLName, empNumber) values "
+                + "(?, ?, ?, ?, ?); ";
+
+        if (conn == null) {
+            createConnection();
+        }
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, reservation.getVehicleLicense());
+            preparedStatement.setDouble(2, reservation.getRate());
+            preparedStatement.setInt(3, reservation.getSpaceNum());
+            preparedStatement.setString(4, reservation.getpLName());
+            preparedStatement.setInt(5, reservation.getEmpNumber());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
     
 }
