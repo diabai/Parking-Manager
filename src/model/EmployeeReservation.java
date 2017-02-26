@@ -17,4 +17,39 @@ public class EmployeeReservation {
         empNumber = theEmpNumber;
     }
 
+    /**
+     * @return the vehicleLicense
+     */
+    public String getVehicleLicense() {
+        return vehicleLicense;
+    }
+
+    /**
+     * @return the rate
+     */
+    public double getRate() {
+        return rate;
+    }
+
+    /**
+     * @return the spaceNum
+     */
+    public int getSpaceNum() {
+        return spaceNum;
+    }
+
+    /**
+     * @return the pLName
+     */
+    public String getpLName() {
+        return pLName;
+    }
+
+    /**
+     * @return the empNumber
+     */
+    public int getEmpNumber() {
+        return empNumber;
+    }
+
 }
