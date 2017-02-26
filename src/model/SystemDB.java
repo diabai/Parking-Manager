@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import data.DataConnection;
-import item.Item;
-
 public class SystemDB {
     
     private static String userName = "demyan15"; //Change to yours
@@ -32,9 +29,11 @@ public class SystemDB {
         connectionProps.put("user", userName);
         connectionProps.put("password", password);
 
-        conn = DriverManager.getConnection("jdbc:" + "mysql" + "://"
-                + serverName + "/", connectionProps);
-
+        conn =  DriverManager
+                .getConnection("jdbc:mysql://" + serverName + "/" 
+        + userName + "?user=" + userName + "&password=" + password);
+                
+        
         System.out.println("Connected to database");
     }
 
@@ -96,7 +95,7 @@ public class SystemDB {
                 int capacity = rs.getInt("capacity");
                 int numFloors = rs.getInt("numFloors");
                 ParkingLot emp = new ParkingLot(name, location, capacity, numFloors);
-                employeeList.add(emp);
+                lotList.add(emp);
             }
         } catch (SQLException e) {
             System.out.println(e);
@@ -119,16 +118,16 @@ public class SystemDB {
         }
         Statement stmt = null;
         String query = "select spaceNum, covered"
-                + "from parkingSpace where PLName = " + lot.getName();
+                + "from parkingSpace where PLName = " + lot.getpLName();
 
         List<ParkingSpace> spaces = new ArrayList<ParkingSpace>();
         try {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                String number = rs.getString("spaceNum");
-                String covered = rs.getString("covered");            
-                ParkingSpot emp = new ParkingSpot(number, covered, lot.getName());
+                int number = rs.getInt("spaceNum");
+                boolean covered = rs.getBoolean("covered");            
+                ParkingSpace emp = new ParkingSpace(number, covered, lot.getpLName());
                 spaces.add(emp);
             }
         } catch (SQLException e) {
@@ -182,7 +181,11 @@ public class SystemDB {
                 + "(?, ?, ?, ?, ?, ?); ";
 
         if (conn == null) {
-            createConnection();
+            try {
+                createConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         PreparedStatement preparedStatement = null;
@@ -190,7 +193,7 @@ public class SystemDB {
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, reservation.getVisitorsVehLicense());
             preparedStatement.setInt(2, reservation.getSpaceNum());
-            preparedStatement.setDouble(3, reservation.getpLName());
+            preparedStatement.setString(3, reservation.getpLName());
             preparedStatement.setInt(4, reservation.getEmpNumber());
             preparedStatement.setDate(5, reservation.getDate());
             preparedStatement.setTime(6, reservation.getTime());
@@ -215,7 +218,11 @@ public class SystemDB {
                 + "(?, ?, ?, ?, ?); ";
 
         if (conn == null) {
-            createConnection();
+            try {
+                createConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         PreparedStatement preparedStatement = null;
