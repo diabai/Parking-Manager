@@ -18,6 +18,7 @@ public class SystemDB {
     private static Connection conn;
     private List<Employee> employeeList;
     private List<ParkingLot> lotList;
+    private List<ParkingSpace> parkingSpaceList;
 
     /**
      * Creates a sql connection to MySQL using the properties for
@@ -72,6 +73,28 @@ public class SystemDB {
         return employeeList;
     }
     
+    
+    /**
+	 * Adds a new employee to the table.
+	 * @param emp the employee to add to the table 
+	 */
+	public void addEmployee(Employee emp) {
+		String sql = "insert into employee values " + "(?, ?, ?, ?); ";
+
+		PreparedStatement preparedStatement = null;
+		try {
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, emp.getmEmpNumber());
+			preparedStatement.setString(2, emp.getmName());
+			preparedStatement.setInt(3, emp.getmExtNum());
+			preparedStatement.setString(4, emp.getmVehicleLicense());
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(e);
+			e.printStackTrace();
+		} 
+	}
+    
     /**
      * Returns a list of Parking Location objects from the database.
      * @return list of employees
@@ -107,6 +130,27 @@ public class SystemDB {
         return lotList;
     }
     
+    
+    /**
+	 * Adds a new parking lot to the table.
+	 * @param pl the parking lot to add to the table 
+	 */
+	public void addParkingLot(ParkingLot pl) {
+		String sql = "insert into parkingLot values " + "(?, ?, ?, ?); ";
+
+		PreparedStatement preparedStatement = null;
+		try {
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, pl.getpLName());
+			preparedStatement.setString(2, pl.getLocation());
+			preparedStatement.setInt(3, pl.getCapacity());
+			preparedStatement.setInt(4, pl.getNumFloors());
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(e);
+			e.printStackTrace();
+		} 
+	}
     /**
      * Returns a list of Parking Location objects from the database.
      * @return list of employees
@@ -140,6 +184,27 @@ public class SystemDB {
         return spaces;
     }
     
+    
+
+	  /**
+		 * Adds a new parking space to the table.
+		 * @param sp the parking space to add to the table 
+		 */
+		public void addParkingSpace(ParkingSpace sp) {
+			String sql = "insert into parkingSpace values " + "(?, ?, ?); ";
+
+			PreparedStatement preparedStatement = null;
+			try {
+				preparedStatement = conn.prepareStatement(sql);
+				preparedStatement.setInt(1, sp.getSpaceNum());
+				preparedStatement.setBoolean(2, sp.getCovered());
+				preparedStatement.setString(3, sp.getpLName());
+				preparedStatement.executeUpdate();
+			} catch (SQLException e) {
+				System.out.println(e);
+				e.printStackTrace();
+			} 
+		}
     /**
      * Modifies the movie information corresponding to the index in the list.
      * @param row index of the element in the list
