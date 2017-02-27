@@ -587,14 +587,12 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         }
         else if (e.getSource() == updateEmployeeBtn)
         {
-
-        }else if (e.getSource() == addParkingLot) {
             // Check whether an employee has been chosen
             if (staffTable.getSelectedRow() > -1) {
-                  pnlContent.removeAll();
-                  pnlContent.add(createUpdEmpPnl());
-                  pnlContent.revalidate();
-                  this.repaint();
+                pnlContent.removeAll();
+                pnlContent.add(createUpdEmpPnl());
+                pnlContent.revalidate();
+                this.repaint();
             }
             else 
             {
