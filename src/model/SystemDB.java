@@ -1,11 +1,13 @@
 package model;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -33,9 +35,6 @@ public class SystemDB {
         conn =  DriverManager
                 .getConnection("jdbc:mysql://" + serverName + "/" 
         + userName + "?user=" + userName + "&password=" + password);
-                
-        
-        System.out.println("Connected to database");
     }
 
     /**
@@ -162,7 +161,7 @@ public class SystemDB {
         }
         Statement stmt = null;
         String query = "select spaceNum, covered"
-                + "from parkingSpace where PLName = " + lot.getpLName();
+                + " from parkingSpace where pLName = '" + lot.getpLName() + "'";
 
         List<ParkingSpace> spaces = new ArrayList<ParkingSpace>();
         try {
@@ -211,12 +210,11 @@ public class SystemDB {
      * @param columnName attribute to modify
      * @param data value to supply
      */
-    public void updateEmployee(int row, String columnName, Object data) {
+    public int updateEmployee(int row, String columnName, Object data) {
         
         Employee employee = employeeList.get(row);
         int empNum = employee.getmEmpNumber();
         String sql = "update employee set " + columnName + " = ?  where empNumber = ? ";
-        System.out.println(sql);
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = conn.prepareStatement(sql);
@@ -226,11 +224,13 @@ public class SystemDB {
                 preparedStatement.setInt(1, (Integer) data);
             preparedStatement.setInt(2, empNum);
             preparedStatement.executeUpdate();
+           employeeList = getEmployees();      
         } catch (SQLException e) {
             System.out.println(e);
             e.printStackTrace();
+            return -1;
         } 
-        
+        return 1;
     }
     
     /**
@@ -242,14 +242,15 @@ public class SystemDB {
         if (reservation == null) {
             throw new IllegalArgumentException();
         }
-        String sql = "insert into visitorReservation(visitorsVehLicense, spaceNum, pLName, empNumber, `date`, `time`) values "
-                + "(?, ?, ?, ?, ?, ?); ";
+        String sql = "insert into visitorReservation(visitorsVehLicense, spaceNum, pLName, empNumber, `date`) values "
+                + "(?, ?, ?, ?, ?); ";
 
         if (conn == null) {
             try {
                 createConnection();
             } catch (SQLException e) {
                 e.printStackTrace();
+                return false;
             }
         }
 
@@ -261,7 +262,7 @@ public class SystemDB {
             preparedStatement.setString(3, reservation.getpLName());
             preparedStatement.setInt(4, reservation.getEmpNumber());
             preparedStatement.setDate(5, reservation.getDate());
-            preparedStatement.setTime(6, reservation.getTime());
+            System.out.println(preparedStatement.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -279,7 +280,7 @@ public class SystemDB {
         if (reservation == null) {
             throw new IllegalArgumentException();
         }
-        String sql = "insert into employeeReservation(vehicleLicense, rate, spaceNum, pLName, empNumber) values "
+        String sql = "insert into empReservation(vehicleLicense, rate, spaceNum, pLName, empNumber) values "
                 + "(?, ?, ?, ?, ?); ";
 
         if (conn == null) {
@@ -304,6 +305,88 @@ public class SystemDB {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Returns a list of Parking Location objects from the database.
+     * @return list of employees
+     * @throws SQLException
+     */
+    public List<EmployeeReservation> getEmpReservations() throws SQLException {
+        if (conn == null) {
+            createConnection();
+        }
+        Statement stmt = null;
+        String query = "select vehicleLicense, rate, spaceNum, pLName, empNumber"
+                + " from empReservation";
+
+        List<EmployeeReservation> reservations = new ArrayList<EmployeeReservation>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                String license = rs.getString("spaceNum");
+                double rate = rs.getDouble("rate");   
+                int space = rs.getInt("spaceNum");     
+                String pLot = rs.getString("pLName");
+                int empNumber = rs.getInt("empNumber");  
+                EmployeeReservation emp = new EmployeeReservation(license, rate, space, pLot, empNumber);
+                reservations.add(emp);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return reservations;
+    }
+    
+    /**
+     * Returns a list of Visitor Reservation objects from the database.
+     * @return list of Visitor Reservations
+     * @throws SQLException
+     */
+    public List<VisitorReservation> getVisitorReservations() {
+        if (conn == null) {
+            try {
+                createConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        Statement stmt = null;
+        String query = "select visitorsVehLicense, spaceNum, pLName, empNumber, `time`, visitorID"
+                + " from visitorReservation";
+
+        List<VisitorReservation> reservations = new ArrayList<VisitorReservation>();
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                String license = rs.getString("visitorsVehLicense");
+                int space = rs.getInt("spaceNum");     
+                String pLot = rs.getString("pLName");
+                int empNumber = rs.getInt("empNumber");  
+                Date date = rs.getDate("`date`");
+                String id = rs.getString("visitorID");
+                VisitorReservation reservation = new VisitorReservation(license, space, pLot, empNumber, date);
+                reservation.setVisitorID(Integer.parseInt(id));
+                reservations.add(reservation);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return reservations;
     }
     
 }

@@ -54,6 +54,11 @@ public class ParkingLot {
 		this.numFloors = numFloors;
 	}
 	
+	@Override
+	public String toString() {
+	    return "Name: " + pLName + ", Location: " + location;
+	}
+	
 	
 	
 	
