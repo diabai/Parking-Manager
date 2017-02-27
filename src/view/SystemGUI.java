@@ -101,7 +101,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
     private JPanel createUpperPanel() {
         
         upperPnl = new JPanel();
-        JPanel buttonPanel1 = new JPanel(new GridLayout(1, 4, 5, 5));
+        JPanel buttonPanel1 = new JPanel(new GridLayout(1, 4, 15, 5));
         JPanel buttonPanel2 = new JPanel(new GridLayout(1, 3, 5, 5));
         
         //settings its layout to have a capacity of 2 rows and 3 columns
@@ -163,8 +163,8 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
     
     /** Shows the panel needed for reserving a parking spot for visitors. */
     private JPanel createResVisitorPnl() {
-        JPanel visInfoPanel = new JPanel(new GridLayout(6, 0));
-        String visLabels[] = {"Visitor's Vehicle License Number: ",  "Sponsor's Employee ID", "Choose Date", "Choose Times"};
+        JPanel visInfoPanel = new JPanel(new GridLayout(7, 1, 15, 15));
+        String visLabels[] = {"Visitor's Vehicle License Number: ",  "Sponsor's Employee ID"};
         JTextField fields[] = new JTextField[2];
         
         for (int i=0; i<visLabels.length; i++) {
@@ -246,6 +246,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         timesPnl.add(time);
         visInfoPanel.add(timesPnl);
         
+        JPanel btnPanel = new JPanel(new GridLayout(1, 3));
         JButton makeResBtn = new JButton("Make Reservation");
         makeResBtn.addActionListener(new ActionListener() {
             @Override
@@ -260,8 +261,10 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
             }
             
         });
-        
-        visInfoPanel.add(makeResBtn);
+        btnPanel.add(new JPanel());
+        btnPanel.add(new JPanel());
+        btnPanel.add(makeResBtn);
+        visInfoPanel.add(btnPanel);
         
         return visInfoPanel;
         
