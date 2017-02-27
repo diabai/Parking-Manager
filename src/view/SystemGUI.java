@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -197,17 +198,19 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
             public void actionPerformed(ActionEvent e) {
                 PLSpot.removeAllItems();
                 try {
-                    spotsList = db.getParkingSpaces((ParkingLot)PLlocation.getSelectedItem());
+                    spotsList = db.getParkingSpaces((ParkingLot)PLlocation.getSelectedItem());                    
                     if (empResList != null) {
-                        for (ParkingSpace space: spotsList) {
+                        Iterator<ParkingSpace> iter = spotsList.iterator();
+                        while (iter.hasNext()) {
+                            ParkingSpace space = iter.next();
                             for (EmployeeReservation reservation: empResList) {
                                 if (space.getpLName().equals(reservation.getpLName()) && space.getSpaceNum() == reservation.getSpaceNum()) {
-                                    spotsList.remove(space);
+                                    iter.remove();
                                 }
-                            }
+                            }                      
                         }
-                   }
-                    
+                    }
+
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
@@ -248,25 +251,28 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
             @Override
             public void actionPerformed(ActionEvent e) {   
                 // Create reservation class, make DB call
-                try {
-                    System.out.println(date.getText());
-                    Date datee = Date.valueOf(date.getText());           
-                    VisitorReservation rsvtion = new VisitorReservation(licenseField.getText(), ((ParkingSpace)PLSpot.getSelectedItem()).getSpaceNum(), 
-                            ((ParkingLot)PLlocation.getSelectedItem()).getpLName(), employeeList.get(staffTable.getSelectedRow()).getmEmpNumber(), Date.valueOf(date.getText()));
-                    if(db.addVisitorReservation(rsvtion)) {
-                        JOptionPane.showMessageDialog(null, "Spot successfully reserved");
+                if (licenseField.getText().length() == 0) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid license number");
+                }
+                else {
+                    try {
+                        System.out.println(date.getText());
+                        Date datee = Date.valueOf(date.getText());           
+                        VisitorReservation rsvtion = new VisitorReservation(licenseField.getText(), ((ParkingSpace)PLSpot.getSelectedItem()).getSpaceNum(), 
+                                ((ParkingLot)PLlocation.getSelectedItem()).getpLName(), employeeList.get(staffTable.getSelectedRow()).getmEmpNumber(), Date.valueOf(date.getText()));
+                        if(db.addVisitorReservation(rsvtion)) {
+                            JOptionPane.showMessageDialog(null, "Spot successfully reserved");
+                        }
+                        else {
+                            JOptionPane.showMessageDialog(null, "Failed to reserve");
+                        }
                     }
-                    else {
-                        JOptionPane.showMessageDialog(null, "Failed to reserve");
+                    catch (IllegalArgumentException ee) {
+                        JOptionPane.showMessageDialog(null, "Date incorrectly entered");
                     }
                 }
-                catch (IllegalArgumentException ee) {
-                    JOptionPane.showMessageDialog(null, "Date incorrectly entered");
-                }
-               
-                  
             }
-            
+
         });
         btnPanel.add(new JPanel());
         btnPanel.add(new JPanel());
@@ -280,7 +286,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
     /** Shows the panel needed for reserving a parking spot for employees. */
     private JPanel createResEmployeePnl() {
         // Get selected Employee from table
-        JPanel panel = new JPanel(new GridLayout(4, 1));
+        JPanel panel = new JPanel(new GridLayout(4, 1, 15, 15));
         
         List<ParkingLot> lots = new ArrayList<ParkingLot>();
         
@@ -306,16 +312,19 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
                 PLSpot.removeAllItems();
                 try {
                     spotsList = db.getParkingSpaces((ParkingLot)PLlocation.getSelectedItem());
-                     if (empResList != null) {
-                            for (ParkingSpace space: spotsList) {
-                                for (EmployeeReservation reservation: empResList) {
-                                    if (space.getpLName().equals(reservation.getpLName()) && space.getSpaceNum() == reservation.getSpaceNum()) {
-                                        spotsList.remove(space);
-                                    }
+                    Iterator<ParkingSpace> iter = spotsList.iterator();
+                    if (empResList != null) {
+                        while (iter.hasNext()) {
+                            ParkingSpace space = iter.next();
+
+                            for (EmployeeReservation reservation: empResList) {
+                                if (space.getpLName().equals(reservation.getpLName()) && space.getSpaceNum() == reservation.getSpaceNum()) {
+                                    iter.remove();
                                 }
                             }
-                       }
-                  
+                        }    
+                    }
+                 
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
@@ -405,15 +414,23 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
                 // Create reservation class, make DB call
                 if (telField.getText().length() > 0)
                 {
-                    int success = db.updateEmployee(staffTable.getSelectedRow(), "extNum", telField.getText());
-                    if (success > 0) 
-                    {
-                        JOptionPane.showMessageDialog(null, "Extension # Successfully Changed");
+                    try {
+                         int test = Integer.parseInt(telField.getText());
+                         int success = db.updateEmployee(staffTable.getSelectedRow(), "extNum", telField.getText());
+                         if (success > 0) 
+                         {
+                             JOptionPane.showMessageDialog(null, "Extension # Successfully Changed");
+                         }
+                         else 
+                         {
+                             JOptionPane.showMessageDialog(null, "Failed To Change Extension #");
+                         }
                     }
-                    else 
-                    {
-                        JOptionPane.showMessageDialog(null, "Failed To Change Extension #");
+                    catch (NumberFormatException ee) {
+                        JOptionPane.showMessageDialog(null, "Extension number is incorrect");
                     }
+                   
+                   
                     
                 }
 
