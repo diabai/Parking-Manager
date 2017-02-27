@@ -51,7 +51,10 @@ public class ParkingSpace {
 		this.pLName = pLName;
 	}
 	
-	
+	@Override
+	public String toString() {
+	    return "Number: " + spaceNum + ", Covered: " + covered;
+	}
 	
 	
 	

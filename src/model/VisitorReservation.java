@@ -12,17 +12,15 @@ public class VisitorReservation {
     private int empNumber;
     private int visitorID;
     private Date date;
-    private Time time;
         
     public VisitorReservation(String theVisitorsVehLicense, int theSpaceNum, String thePLName, int theEmpNumber, 
-            Date theDate, Time theTime) {
+            Date theDate) {
         visitorsVehLicense = theVisitorsVehLicense;
         spaceNum = theSpaceNum;
         pLName = thePLName;
         empNumber = theEmpNumber;
         visitorID = -1;
         date = theDate;
-        time = theTime;
     }
 
     /**
@@ -74,12 +72,6 @@ public class VisitorReservation {
         return date;
     }
 
-    /**
-     * @return the time
-     */
-    public Time getTime() {
-        return time;
-    }
     
     
     
