@@ -1,12 +1,25 @@
 package model;
 
-/** Contains information about an employee's parking reservation. */
+/** 
+ * Contains information about an employee's parking reservation.
+ * @author Dema
+ * @version 2.28.2017
+ */
 public class EmployeeReservation {
     
+    /** The license number of the employee. */
     private String vehicleLicense;
+    
+    /** The rate for this reservation. */
     private double rate;
+    
+    /** The spot reserved. */
     private int spaceNum;
+    
+    /** The name of the Parking Lot where the spot has been reserved. */
     private String pLName;
+    
+    /** The employee's ID number. */
     private int empNumber;
     
     public EmployeeReservation(String theVehicleLicense, double theRate, int theSpaceNum, String thePLName, int theEmpNumber) {
