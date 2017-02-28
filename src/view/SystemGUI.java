@@ -634,7 +634,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
 			for (int i = 0; i < txfField.length; i++) {
 				txfField[i].setText("");
 			}
-		}else if (e.getSource() == addParkingSpace) {
+		} else if (e.getSource() == addParkingSpace) {
 
 			pnlContent.removeAll();
 			pnlContent.add(createAddParkingSpace());
