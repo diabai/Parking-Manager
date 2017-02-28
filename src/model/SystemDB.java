@@ -7,19 +7,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Medium through which SQL database can be accessed.
+ * @author Dema and Ibrahim
+ * @version 2.28.2017
+ */
 public class SystemDB {
     
     private static String userName = "demyan15"; //Change to yours
     private static String password = "ununItHo";
     private static String serverName = "cssgate.insttech.washington.edu";
     private static Connection conn;
+    
+    /** List of employees. */
     private List<Employee> employeeList;
+    
+    /** List of parking lots. */
     private List<ParkingLot> lotList;
+    
+    /** List of parking spaces. */
     private List<ParkingSpace> parkingSpaceList;
 
     /**
@@ -59,7 +69,8 @@ public class SystemDB {
                 String name = rs.getString("name");
                 int extNum = rs.getInt("extNum");
                 String genre = rs.getString("vehicleLicense");
-                Employee emp = new Employee(ID, name, extNum, genre);
+                Employee emp = new Employee(name, extNum, genre);
+                emp.setmEmpNumber(ID);
                 employeeList.add(emp);
             }
         } catch (SQLException e) {
@@ -78,15 +89,14 @@ public class SystemDB {
 	 * @param emp the employee to add to the table 
 	 */
 	public void addEmployee(Employee emp) {
-		String sql = "insert into employee values " + "(?, ?, ?, ?); ";
+		String sql = "insert into employee(name, extNum, vehicleLicense) values " + "(?, ?, ?); ";
 
 		PreparedStatement preparedStatement = null;
 		try {
 			preparedStatement = conn.prepareStatement(sql);
-			preparedStatement.setInt(1, emp.getmEmpNumber());
-			preparedStatement.setString(2, emp.getmName());
-			preparedStatement.setInt(3, emp.getmExtNum());
-			preparedStatement.setString(4, emp.getmVehicleLicense());
+			preparedStatement.setString(1, emp.getmName());
+			preparedStatement.setInt(2, emp.getmExtNum());
+			preparedStatement.setString(3, emp.getmVehicleLicense());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -96,7 +106,7 @@ public class SystemDB {
     
     /**
      * Returns a list of Parking Location objects from the database.
-     * @return list of employees
+     * @return list of parkingLot objects
      * @throws SQLException
      */
     public List<ParkingLot> getParkingLots() throws SQLException {
@@ -134,25 +144,21 @@ public class SystemDB {
 	 * Adds a new parking lot to the table.
 	 * @param pl the parking lot to add to the table 
 	 */
-	public void addParkingLot(ParkingLot pl) {
+	public void addParkingLot(ParkingLot pl) throws SQLException {
 		String sql = "insert into parkingLot values " + "(?, ?, ?, ?); ";
 
 		PreparedStatement preparedStatement = null;
-		try {
-			preparedStatement = conn.prepareStatement(sql);
-			preparedStatement.setString(1, pl.getpLName());
-			preparedStatement.setString(2, pl.getLocation());
-			preparedStatement.setInt(3, pl.getCapacity());
-			preparedStatement.setInt(4, pl.getNumFloors());
-			preparedStatement.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(e);
-			e.printStackTrace();
-		} 
+		preparedStatement = conn.prepareStatement(sql);
+		preparedStatement.setString(1, pl.getpLName());
+		preparedStatement.setString(2, pl.getLocation());
+		preparedStatement.setInt(3, pl.getCapacity());
+		preparedStatement.setInt(4, pl.getNumFloors());
+		preparedStatement.executeUpdate();
+
 	}
     /**
-     * Returns a list of Parking Location objects from the database.
-     * @return list of employees
+     * Returns a list of Parking Space objects from the database.
+     * @return list of ParkingSpace objects.
      * @throws SQLException
      */
     public List<ParkingSpace> getParkingSpaces(ParkingLot lot) throws SQLException {
@@ -201,7 +207,7 @@ public class SystemDB {
 
     }
     /**
-     * Modifies the movie information corresponding to the index in the list.
+     * Modifies the employee's information corresponding to the index in the list.
      * @param row index of the element in the list
      * @param columnName attribute to modify
      * @param data value to supply
@@ -258,7 +264,6 @@ public class SystemDB {
             preparedStatement.setString(3, reservation.getpLName());
             preparedStatement.setInt(4, reservation.getEmpNumber());
             preparedStatement.setDate(5, reservation.getDate());
-            System.out.println(preparedStatement.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -304,8 +309,8 @@ public class SystemDB {
     }
     
     /**
-     * Returns a list of Parking Location objects from the database.
-     * @return list of employees
+     * Returns a list of EmployeeReservation objects from the database.
+     * @return list of employee reservations.
      * @throws SQLException
      */
     public List<EmployeeReservation> getEmpReservations() throws SQLException {
@@ -353,7 +358,7 @@ public class SystemDB {
             }
         }
         Statement stmt = null;
-        String query = "select visitorsVehLicense, spaceNum, pLName, empNumber, `time`, visitorID"
+        String query = "select visitorsVehLicense, spaceNum, pLName, empNumber, date, visitorID"
                 + " from visitorReservation";
 
         List<VisitorReservation> reservations = new ArrayList<VisitorReservation>();
@@ -365,7 +370,7 @@ public class SystemDB {
                 int space = rs.getInt("spaceNum");     
                 String pLot = rs.getString("pLName");
                 int empNumber = rs.getInt("empNumber");  
-                Date date = rs.getDate("`date`");
+                Date date = rs.getDate("date");
                 String id = rs.getString("visitorID");
                 VisitorReservation reservation = new VisitorReservation(license, space, pLot, empNumber, date);
                 reservation.setVisitorID(Integer.parseInt(id));

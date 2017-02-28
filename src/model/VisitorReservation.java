@@ -1,16 +1,30 @@
 package model;
 
 import java.sql.Date;
-import java.sql.Time;
 
-/** Contains data about a visitor's parking reservation. */
+/**
+ * Contains data about a visitor's parking reservation.  
+ * @author Dema
+ * @version 2.28.2017
+ */
 public class VisitorReservation {
     
+    /** The visitor's vehicle's license number. */
     private String visitorsVehLicense;
+    
+    /** The spot number that's been reserved. */
     private int spaceNum;
+    
+    /** The parking lot where the spot has been reserved at. */
     private String pLName;
+    
+    /** The ID of the employee sponsoring the visitor. */
     private int empNumber;
+    
+    /** The ID of the visitor. */
     private int visitorID;
+    
+    /** The date of the reservation. */
     private Date date;
         
     public VisitorReservation(String theVisitorsVehLicense, int theSpaceNum, String thePLName, int theEmpNumber, 
@@ -71,8 +85,5 @@ public class VisitorReservation {
     public Date getDate() {
         return date;
     }
-
-    
-    
-    
+  
 }

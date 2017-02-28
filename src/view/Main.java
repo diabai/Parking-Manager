@@ -4,8 +4,8 @@ import javax.swing.JFrame;
 
 /**
  * Driver for the program
- * @author Dema
- *
+ * @author Dema and Ibrahim
+ *@version 2.28.2017
  */
 public class Main {
 
