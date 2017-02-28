@@ -189,21 +189,17 @@ public class SystemDB {
 		 * Adds a new parking space to the table.
 		 * @param sp the parking space to add to the table 
 		 */
-		public void addParkingSpace(ParkingSpace sp) {
-			String sql = "insert into parkingSpace values " + "(?, ?, ?); ";
+    public void addParkingSpace(ParkingSpace sp) throws SQLException {
+        String sql = "insert into parkingSpace values " + "(?, ?, ?); ";
 
-			PreparedStatement preparedStatement = null;
-			try {
-				preparedStatement = conn.prepareStatement(sql);
-				preparedStatement.setInt(1, sp.getSpaceNum());
-				preparedStatement.setBoolean(2, sp.getCovered());
-				preparedStatement.setString(3, sp.getpLName());
-				preparedStatement.executeUpdate();
-			} catch (SQLException e) {
-				System.out.println(e);
-				e.printStackTrace();
-			} 
-		}
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setInt(1, sp.getSpaceNum());
+        preparedStatement.setBoolean(2, sp.getCovered());
+        preparedStatement.setString(3, sp.getpLName());
+        preparedStatement.executeUpdate();
+
+    }
     /**
      * Modifies the movie information corresponding to the index in the list.
      * @param row index of the element in the list
