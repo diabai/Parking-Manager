@@ -643,11 +643,17 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
 				
 			ParkingSpace ps = new ParkingSpace(Integer.parseInt(txfField[0].getText()), Boolean.parseBoolean(txfField[1].getText()),
 					txfField[2].getText());
-			db.addParkingSpace(ps);;
-			JOptionPane.showMessageDialog(null, "Added parking space successfully!");
-			for (int i = 0; i < txfField.length; i++) {
-				txfField[i].setText("");
+			try {
+			    db.addParkingSpace(ps);			    
+			    JOptionPane.showMessageDialog(null, "Added parking space successfully!");
+			    for (int i = 0; i < txfField.length; i++) {
+			        txfField[i].setText("");
+			    }
 			}
+			catch (SQLException ee) {
+			    JOptionPane.showMessageDialog(null, "Error adding Parking Spot");
+			}
+			
 
 		}
         else if (e.getSource() == viewEmployeesButton) 
