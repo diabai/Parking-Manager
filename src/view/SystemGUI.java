@@ -6,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 
 import model.Employee;
 import model.EmployeeReservation;
@@ -31,133 +27,155 @@ import model.SystemDB;
 import model.VisitorReservation;
 import model.ParkingSpace;
 
-public class SystemGUI extends JFrame implements ActionListener, TableModelListener {
-    
-    private SystemDB db;
-    private List<Employee> employeeList;
-    private List<ParkingSpace> spotsList;
-    private List<EmployeeReservation> empResList;
-    private Object[][] staffTableData;
+/**
+ * Creates the GUI interface.
+ * @author Dema and Ibrahim
+ * @version 2.28.2017
+ */
+public class SystemGUI extends JFrame implements ActionListener {
 
     /** For Serialization.*/
     private static final long serialVersionUID = 6515753873615102989L;
-    
 
-    
+    /** The database object that provides access to SQL database. */
+    private SystemDB db;
+
+    /** List of employees. Used as needed.*/
+    private List<Employee> employeeList;
+
+    /** List of parking spots. Used as needed. */
+    private List<ParkingSpace> spotsList;
+
+    /** List of employee reservations. Used as needed. */
+    private List<EmployeeReservation> empResList;
+
+    /** Contains list of employees as Object types to pass to a table. */
+    private Object[][] staffTableData;  
+
     /** Buttons for reserving parking spots and updating employees. */
     private JButton viewEmployeesButton, resVisitorBtn, btnAddEmployee, resEmployeeBtn, updateEmployeeBtn, addParkingLot, addEmployee,
-	addParkingSpace, btnAddLot, btnAddSpace;
-    
+    addParkingSpace, btnAddLot, btnAddSpace;
+
     /** Table that contains information from database. */
-    private JTable staffTable, parkingSpotTable;
-    
+    private JTable staffTable;
+
     /** Main panels that divide the GUI window. */
-    private JPanel upperPnl, pnlContent, staffTblePnl, pkSpotTblPnl;
-    
+    private JPanel upperPnl, pnlContent;
+
     /** Combo boxes for reserving parking spots. */
-    private JComboBox PLlocation, PLSpot, resDate, resTime;
+    private JComboBox PLlocation, PLSpot;
+
+    /** Labels for user input*/
+    private JLabel[] txfLabel = new JLabel[4];
+
+    /**Text fields for user input*/
+    private JTextField[] txfField = new JTextField[4];
     
     /** Labels for user input*/
-	private JLabel[] txfLabel = new JLabel[4];
-	/**Text fields for user input*/
-	private JTextField[] txfField = new JTextField[4];
+    private JLabel[] txfEmpLabel = new JLabel[3];
+    
+    /**Text fields for user input*/
+    private JTextField[] txfEmpField = new JTextField[3];
+    
+    /** Boolean for determining whether to show pane. */
+    private boolean initialSelection;
 
     public SystemGUI()  {
         super("ParkingApplication");
-        
+
         updateEmployeeTable();       
         createComponents();
         setVisible(true);
-        setMinimumSize(new Dimension(700, 600));
+        setMinimumSize(new Dimension(700, 550));
     }
-    
-    /** Updates current list of employees and updates the currentTable shown. */
+
+    /** Updates current list of employees and updates the table shown. */
     private void updateEmployeeTable() {
-         db = new SystemDB();
+        db = new SystemDB();
         try
         {
             employeeList = db.getEmployees();
-            
+
             staffTableData = new Object[employeeList.size()][4];
             for (int i=0; i<employeeList.size(); i++) {
                 staffTableData[i][0] = employeeList.get(i).getmEmpNumber();
                 staffTableData[i][1] = employeeList.get(i).getmName();
                 staffTableData[i][2] = employeeList.get(i).getmExtNum();
                 staffTableData[i][3] = employeeList.get(i).getmVehicleLicense();
-                
+
             }
-            
+
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
     }
-    
+
     /** Creates the GUI components. */
     private void createComponents() {
-        
+
         // Lay out table into two sections
         upperPnl = createUpperPanel();
         pnlContent = new JPanel();
         pnlContent.add(createEmployeeTablePanel());
-        
+
         this.add(upperPnl, BorderLayout.NORTH);
         this.add(pnlContent, BorderLayout.CENTER);
-                 
+
     }
-    
+
     /** Creates upper panel with buttons. */
     private JPanel createUpperPanel() {
-        
+
         upperPnl = new JPanel();
         JPanel buttonPanel1 = new JPanel(new GridLayout(1, 4, 15, 5));
         JPanel buttonPanel2 = new JPanel(new GridLayout(1, 3, 5, 5));
-        
+
         //settings its layout to have a capacity of 2 rows and 3 columns
         // 5 is the space between the buttons
         upperPnl.setLayout(new GridLayout(2,1,5,5));
-        
+
         viewEmployeesButton = new JButton("View Employees");
         viewEmployeesButton.addActionListener(this);
         buttonPanel1.add(viewEmployeesButton);
-        
+
         // Reserve Visitor Parking Spot Button
         resVisitorBtn = new JButton("Reserve Visitor Parking");
         resVisitorBtn.addActionListener(this);
         buttonPanel1.add(resVisitorBtn);
-        
+
         // Employee Visitor Parking Spot Button
         resEmployeeBtn = new JButton("Reserve Employee Parking");
         resEmployeeBtn.addActionListener(this);
         buttonPanel1.add(resEmployeeBtn);
-        
+
         // Update Employee information Button
         updateEmployeeBtn = new JButton("Update Employee");
         updateEmployeeBtn.addActionListener(this);
         buttonPanel1.add(updateEmployeeBtn);
-        
+
         //Add parking lot button
-        
+
         addParkingLot = new JButton("Add parking lot");
         addParkingLot.addActionListener(this);
         buttonPanel2.add(addParkingLot);
-        
+
         //Add employee
         addEmployee = new JButton("Add employee");
         addEmployee.addActionListener(this);
         buttonPanel2.add(addEmployee);
-        
+
         //Add parking space
         addParkingSpace = new JButton("Add parking space");
         addParkingSpace.addActionListener(this);
         buttonPanel2.add(addParkingSpace);
-        
+
         upperPnl.add(buttonPanel1);
         upperPnl.add(buttonPanel2);
-        
+
         return upperPnl;
     }
-    
+
     /** Creates panel with table of staff. */
     private JPanel createEmployeeTablePanel() {
         String staffColumnNames[] = {"Employee Number", "Employee Name", "Extension Number", "Vehicle License Number"};
@@ -165,97 +183,99 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         staffTable = new JTable(staffTableData, staffColumnNames);
         JScrollPane scrollPane = new JScrollPane(staffTable);
         pnl.add(scrollPane);
-        staffTable.getModel().addTableModelListener(this);
-        
+
         return pnl;
     }
-    
+
     /**
      * The panel that appears when user clicks Add Employee
-     * @return
+     * @return JPanel with buttons and fields attached
      */
     private JPanel createAddEmployeePnl() {
-    	// Add Panel -- the panel that appears when Add Employee button is
-    			// clicked
-    			JPanel pnlAdd = new JPanel();
-    			pnlAdd.setLayout(new GridLayout(6, 0));
-    			String labelNames[] = { "Enter employee number: ", "Enter Name: ", "Enter extension number: " };
-    			for (int i = 0; i < labelNames.length; i++) {
-    				JPanel panel = new JPanel();
-    				txfLabel[i] = new JLabel(labelNames[i]);
-    				txfField[i] = new JTextField(25);
-    				panel.add(txfLabel[i]);
-    				panel.add(txfField[i]);
-    				pnlAdd.add(panel);
-    			}
-    			JPanel panel = new JPanel();
-    			btnAddEmployee = new JButton("Add Employee");
-    			btnAddEmployee.addActionListener(this);
-    			panel.add(btnAddEmployee);
-    			pnlAdd.add(panel);
-    			// End of panel Add -- put this comment here to ease reading
-    			return pnlAdd;
+        // Add Panel -- the panel that appears when Add Employee button is
+        // clicked
+        JPanel pnlAdd = new JPanel();
+        pnlAdd.setLayout(new GridLayout(6, 0));
+        String labelNames[] = {"Enter Name: ", "Enter extension number: ", "Enter vehicle license #: " };
+        for (int i = 0; i < labelNames.length; i++) {
+            JPanel panel = new JPanel();
+            txfEmpLabel[i] = new JLabel(labelNames[i]);
+            txfEmpField[i] = new JTextField(25);
+            panel.add(txfEmpLabel[i]);
+            panel.add(txfEmpField[i]);
+            pnlAdd.add(panel);
+        }
+        JPanel panel = new JPanel();
+        btnAddEmployee = new JButton("Add Employee");
+        btnAddEmployee.addActionListener(this);
+        panel.add(btnAddEmployee);
+        pnlAdd.add(panel);
+        // End of panel Add -- put this comment here to ease reading
+        return pnlAdd;
     }
-    
+
     /**
      * Panel that appears when Add Parking lot button is clicked
-     * @return
+     * @return JPanel with buttons and fields attached.
      */
     private JPanel createAddParkingLotPnl() {
-    	
-    	// Add parking lot panel -- panel that appears when Add Parking lot
-    			// button is clicked
 
-    			JPanel pnlAddParkingLot = new JPanel();
-    			pnlAddParkingLot.setLayout(new GridLayout(6, 0));
-    			String labelsLot[] = { "Enter parking lot name: ", "Enter location: ", "Enter capacity: ",
-    					"Enter number of floors: " };
-    			for (int i = 0; i < labelsLot.length; i++) {
-    				JPanel panelLot = new JPanel();
-    				txfLabel[i] = new JLabel(labelsLot[i]);
-    				txfField[i] = new JTextField(25);
-    				panelLot.add(txfLabel[i]);
-    				panelLot.add(txfField[i]);
-    				pnlAddParkingLot.add(panelLot);
-    			}
-    			JPanel panelLot = new JPanel();
-    			btnAddLot = new JButton("Add parking lot");
-    			btnAddLot.addActionListener(this);
-    			panelLot.add(btnAddLot);
-    			pnlAddParkingLot.add(panelLot); // End of add parking lot panel
-    			return pnlAddParkingLot ;
-    	
+        // Add parking lot panel -- panel that appears when Add Parking lot
+        // button is clicked
+
+        JPanel pnlAddParkingLot = new JPanel();
+        pnlAddParkingLot.setLayout(new GridLayout(6, 0));
+        String labelsLot[] = { "Enter parking lot name: ", "Enter location: ", "Enter capacity: ",
+        "Enter number of floors: " };
+        for (int i = 0; i < labelsLot.length; i++) {
+            JPanel panelLot = new JPanel();
+            txfLabel[i] = new JLabel(labelsLot[i]);
+            txfField[i] = new JTextField(25);
+            panelLot.add(txfLabel[i]);
+            panelLot.add(txfField[i]);
+            pnlAddParkingLot.add(panelLot);
+        }
+        JPanel panelLot = new JPanel();
+        btnAddLot = new JButton("Add parking lot");
+        btnAddLot.addActionListener(this);
+        panelLot.add(btnAddLot);
+        pnlAddParkingLot.add(panelLot); // End of add parking lot panel
+        return pnlAddParkingLot ;
+
     }
-    
-    
+
+    /**
+     * Panel that appears when Add Parking space button is clicked
+     * @return JPanel with functionality added in.
+     */
     private JPanel createAddParkingSpace() {
-    	// Add parking space panel -- panel that appears when Add Parking space
-		// button is clicked
 
-		JPanel pnlAddParkingSpace = new JPanel();
-		pnlAddParkingSpace.setLayout(new GridLayout(6, 0));
-		String labelsSpaces[] = { "Enter parking space number: ", "Enter true if covered, otherwise false ", "Enter parking lot name: ",
-				"Enter number of floors: " };
-		for (int i = 0; i < labelsSpaces.length; i++) {
-			JPanel panelSpaces = new JPanel();
-			txfLabel[i] = new JLabel(labelsSpaces[i]);
-			txfField[i] = new JTextField(25);
-			panelSpaces.add(txfLabel[i]);
-			panelSpaces.add(txfField[i]);
-			pnlAddParkingSpace.add(panelSpaces);
-		}
-		JPanel panelSpaces = new JPanel();
-		btnAddSpace = new JButton("Add parking space");
-		btnAddSpace.addActionListener(this);
-		panelSpaces.add(btnAddSpace);
-		pnlAddParkingSpace.add(panelSpaces); // End of add parking space panel
-		return pnlAddParkingSpace;
+        JPanel pnlAddParkingSpace = new JPanel();
+        pnlAddParkingSpace.setLayout(new GridLayout(6, 0));
+        String labelsSpaces[] = { "Enter parking space number: ", "Enter true if covered, otherwise false ", "Enter parking lot name: "};
+        for (int i = 0; i < labelsSpaces.length; i++) {
+            JPanel panelSpaces = new JPanel();
+            txfLabel[i] = new JLabel(labelsSpaces[i]);
+            txfField[i] = new JTextField(25);
+            panelSpaces.add(txfLabel[i]);
+            panelSpaces.add(txfField[i]);
+            pnlAddParkingSpace.add(panelSpaces);
+        }
+        JPanel panelSpaces = new JPanel();
+        btnAddSpace = new JButton("Add parking space");
+        btnAddSpace.addActionListener(this);
+        panelSpaces.add(btnAddSpace);
+        pnlAddParkingSpace.add(panelSpaces); // End of add parking space panel
+        return pnlAddParkingSpace;
     }
-    
-    /** Shows the panel needed for reserving a parking spot for visitors. */
+
+    /** 
+     * Creates the panel needed for reserving a parking spot for visitors. 
+     * @return JPanel with functionality added in.
+     */
     private JPanel createResVisitorPnl() {
         JPanel visInfoPanel = new JPanel(new GridLayout(6, 1, 15, 15));
-        
+
         JPanel LicensePanel = new JPanel(new GridLayout(1, 2));
         JLabel label = new JLabel("Visitor's Vehicle License Number: ");
         LicensePanel.add(label);
@@ -270,10 +290,12 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         List<ParkingLot> lots = new ArrayList<ParkingLot>();
         try {
             lots = db.getParkingLots();
+            empResList = db.getEmpReservations();
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
         spotsList = new ArrayList<ParkingSpace>();
+        initialSelection = true;
         // Convert to an object
         Object[] PLlocations = new Object[lots.size()];
         for (int i = 0; i < lots.size(); i++) {
@@ -281,7 +303,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         }
         PLlocation = new JComboBox(PLlocations);
         pLComboPanel.add(new JLabel("Choose Parking Location: "));
-        PLlocation.addActionListener(new ActionListener() {
+        PLlocation.addActionListener(new ActionListener() { // Should update the list of spots to choose from
             @Override
             public void actionPerformed(ActionEvent e) {
                 PLSpot.removeAllItems();
@@ -304,15 +326,20 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
                 }
                 for (int i = 0; i < spotsList.size(); i++) {
                     PLSpot.addItem(spotsList.get(i));  
-                }               
+                } 
+                if (!initialSelection) {
+                     JOptionPane.showMessageDialog(null, createReservedTimesPnl(db.getVisitorReservations(), (ParkingLot)PLlocation.getSelectedItem()));
+                }
+                else {
+                    initialSelection = false;
+                }
+                
+               
             }
 
         });
         pLComboPanel.add(PLlocation);
-        visInfoPanel.add(pLComboPanel);
-        
-      // Check to make sure more than 20 parking spaces haven't been taken
-        
+        visInfoPanel.add(pLComboPanel);      
 
         // Parking Spot
         JPanel spotsComboPanel = new JPanel();
@@ -332,7 +359,8 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         datePnl.add(new JLabel("Choose Date (YYYY-MM-DD): "));
         datePnl.add(date);
         visInfoPanel.add(datePnl);
-        
+
+        // Button that gathers all information and adds information to the database
         JPanel btnPanel = new JPanel(new GridLayout(1, 3));
         JButton makeResBtn = new JButton("Make Reservation");
         makeResBtn.addActionListener(new ActionListener() {
@@ -343,9 +371,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
                     JOptionPane.showMessageDialog(null, "Please enter a valid license number");
                 }
                 else {
-                    try {
-                        System.out.println(date.getText());
-                        Date datee = Date.valueOf(date.getText());           
+                    try {       
                         VisitorReservation rsvtion = new VisitorReservation(licenseField.getText(), ((ParkingSpace)PLSpot.getSelectedItem()).getSpaceNum(), 
                                 ((ParkingLot)PLlocation.getSelectedItem()).getpLName(), employeeList.get(staffTable.getSelectedRow()).getmEmpNumber(), Date.valueOf(date.getText()));
                         if(db.addVisitorReservation(rsvtion)) {
@@ -366,18 +392,20 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         btnPanel.add(new JPanel());
         btnPanel.add(makeResBtn);
         visInfoPanel.add(btnPanel);
-        
-        return visInfoPanel;
-        
+
+        return visInfoPanel;        
     }
-    
-    /** Shows the panel needed for reserving a parking spot for employees. */
+
+    /**
+     *  Shows the panel needed for reserving a parking spot for employees.
+     * @return JPanel with functionality added in. 
+     */
     private JPanel createResEmployeePnl() {
         // Get selected Employee from table
         JPanel panel = new JPanel(new GridLayout(4, 1, 15, 15));
-        
+
         List<ParkingLot> lots = new ArrayList<ParkingLot>();
-        
+
         try {
             lots = db.getParkingLots();
             empResList = db.getEmpReservations();
@@ -385,7 +413,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
             e1.printStackTrace();
         }
         spotsList = new ArrayList<ParkingSpace>();
-        
+
         JPanel comboPanel1 = new JPanel(new GridLayout(1, 2));
         // Convert to an object
         Object[] PLlocations = new Object[lots.size()];
@@ -394,7 +422,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         }
         PLlocation = new JComboBox(PLlocations);
         comboPanel1.add(new JLabel("Choose Parking Location: "));
-        PLlocation.addActionListener(new ActionListener() {
+        PLlocation.addActionListener(new ActionListener() { // Update parking spots to those in the chosen parking lot
             @Override
             public void actionPerformed(ActionEvent e) {
                 PLSpot.removeAllItems();
@@ -412,7 +440,7 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
                             }
                         }    
                     }
-                 
+
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
@@ -435,14 +463,16 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         }
         spotsComboPanel.add(PLSpot);
         panel.add(spotsComboPanel);
-        
+
+        // Rate
         JPanel ratePanel = new JPanel(new GridLayout(1, 2));
         JLabel rateLabel = new JLabel("Enter Rate: ");
         JTextField rateField = new JTextField(10);
         ratePanel.add(rateLabel);
         ratePanel.add(rateField);
         panel.add(ratePanel);
-        
+
+        // Button that gathers information and enters it into the database
         JPanel btnPanel = new JPanel(new GridLayout(1, 3));
         JButton makeResBtn = new JButton("Make Reservation");
         makeResBtn.addActionListener(new ActionListener() {
@@ -460,40 +490,64 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
                 catch (NumberFormatException ee) {
                     JOptionPane.showMessageDialog(null, "Failed to reserve the spot; rate format is incorrect");
                 }
-                
+
             }
-            
+
         });
         btnPanel.add(new JPanel());
         btnPanel.add(new JPanel());
         btnPanel.add(makeResBtn);
         panel.add(btnPanel);
-        
+
         return panel;
-        
+
     }
     
     /**
+     * Creates a panel that lists all of the reserved times for a parking lot. 
+     * @param reservations The current visitor reservations.
+     * @param lot The selected Lot.
+     * @return a JPanel with attached functionality.
+     */
+    private JPanel createReservedTimesPnl(List<VisitorReservation> reservations, ParkingLot lot) {
+        JPanel mainPnl = new JPanel(new GridLayout(reservations.size(), 1));
+        int totalReservations = 0;
+        for (VisitorReservation res: reservations) {
+            if (res.getpLName().equals(lot.getpLName())) {
+                 mainPnl.add(new JLabel("Parking Spot: " + res.getSpaceNum() + " Date: " + res.getDate()));
+                 totalReservations++;
+            }          
+        }
+        if (totalReservations == 0) {
+            mainPnl.add(new JLabel("No Reservations"));
+        }
+        return mainPnl;
+    }
+
+    /**
      * Will create a panel for updating employees.
-     * @return
+     * @return JPanel with buttons and fields attached.
      */
     private JPanel createUpdEmpPnl() {
         JPanel mainPanel = new JPanel(new GridLayout(3, 1));
         JPanel telPnl = new JPanel(new GridLayout(1, 2));
         JPanel LicPnl = new JPanel(new GridLayout(1, 2));
-        
+
+        // Extension modification
         JLabel telLabel = new JLabel("New Ext #: ");
         JTextField telField = new JTextField(15);
         telPnl.add(telLabel);
         telPnl.add(telField);
         mainPanel.add(telPnl);
-        
+
+        // License # modification
         JLabel LicLabel = new JLabel("New License #: ");
         JTextField LicField = new JTextField(30);
         LicPnl.add(LicLabel);
         LicPnl.add(LicField);
         mainPanel.add(LicPnl);
-        
+
+        // Gathers entered data and updates database
         JPanel btnPanel = new JPanel(new GridLayout(1, 3));
         JButton makeResBtn = new JButton("Make Update");
         makeResBtn.addActionListener(new ActionListener() {
@@ -503,23 +557,20 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
                 if (telField.getText().length() > 0)
                 {
                     try {
-                         int test = Integer.parseInt(telField.getText());
-                         int success = db.updateEmployee(staffTable.getSelectedRow(), "extNum", telField.getText());
-                         if (success > 0) 
-                         {
-                             JOptionPane.showMessageDialog(null, "Extension # Successfully Changed");
-                         }
-                         else 
-                         {
-                             JOptionPane.showMessageDialog(null, "Failed To Change Extension #");
-                         }
+                        int success = db.updateEmployee(staffTable.getSelectedRow(), "extNum", Integer.parseInt(telField.getText()));
+                        if (success > 0) 
+                        {
+                            JOptionPane.showMessageDialog(null, "Extension # Successfully Changed");
+                        }
+                        else 
+                        {
+                            JOptionPane.showMessageDialog(null, "Failed To Change Extension #");
+                        }
                     }
                     catch (NumberFormatException ee) {
                         JOptionPane.showMessageDialog(null, "Extension number is incorrect");
                     }
-                   
-                   
-                    
+
                 }
 
                 if (LicField.getText().length() > 0)
@@ -541,18 +592,9 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         btnPanel.add(new JPanel());
         btnPanel.add(makeResBtn);
         mainPanel.add(btnPanel);
-     
+
         return mainPanel;
-        
-    }
-    
-    /**
-     * Displays the reservation times already on the parking spot. 
-     * @return
-     */
-    public JPanel createAvailableTimesPnl() {
-        JPanel mainPanel = new JPanel();
-        return mainPanel;
+
     }
 
     @Override
@@ -574,84 +616,90 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
         {
             // Check whether an employee has been chosen
             if (staffTable.getSelectedRow() > -1) {
-                  pnlContent.removeAll();
-                  pnlContent.add(createResEmployeePnl());
-                  pnlContent.revalidate();
-                  this.repaint();
+                pnlContent.removeAll();
+                pnlContent.add(createResEmployeePnl());
+                pnlContent.revalidate();
+                this.repaint();
             }
             else 
             {
                 JOptionPane.showMessageDialog(null, "Must select Employee first");
             }
-          
         }
         else if (e.getSource() == updateEmployeeBtn)
         {
-
-        }else if (e.getSource() == addParkingLot) {
             // Check whether an employee has been chosen
             if (staffTable.getSelectedRow() > -1) {
-                  pnlContent.removeAll();
-                  pnlContent.add(createUpdEmpPnl());
-                  pnlContent.revalidate();
-                  this.repaint();
+                pnlContent.removeAll();
+                pnlContent.add(createUpdEmpPnl());
+                pnlContent.revalidate();
+                this.repaint();
             }
             else 
             {
                 JOptionPane.showMessageDialog(null, "Must select Employee first");
             }
         }
-        else if (e.getSource() == addParkingLot)
+        else if (e.getSource() == addParkingLot) //***
         {
+            pnlContent.removeAll();
+            pnlContent.add(createAddParkingLotPnl());
+            pnlContent.revalidate();
+            this.repaint();
 
-			pnlContent.removeAll();
-			pnlContent.add(createAddParkingLotPnl());
-			pnlContent.revalidate();
-			this.repaint();
+        } else if (e.getSource() == btnAddLot) { //***
 
-		} else if (e.getSource() == btnAddLot) {
+            ParkingLot pl = new ParkingLot(txfField[0].getText(), txfField[1].getText(),
+                    Integer.parseInt(txfField[2].getText()), Integer.parseInt(txfField[3].getText()));
+            try {
+                db.addParkingLot(pl);
+                JOptionPane.showMessageDialog(null, "Added parking lot successfully!");
+                for (int i = 0; i < txfField.length; i++) {
+                    txfField[i].setText("");
+                }
+            } catch (SQLException ee) {
+                JOptionPane.showMessageDialog(null, "Failed to Add Parking Lot");
+            }
+        }
+        else if (e.getSource() == addEmployee) { //*
+            pnlContent.removeAll();
+            pnlContent.add(createAddEmployeePnl());
+            pnlContent.revalidate();
+            this.repaint();
 
-			ParkingLot pl = new ParkingLot(txfField[0].getText(), txfField[1].getText(),
-					Integer.parseInt(txfField[2].getText()), Integer.parseInt(txfField[3].getText()));
-			db.addParkingLot(pl);
-			JOptionPane.showMessageDialog(null, "Added parking lot successfully!");
-			for (int i = 0; i < txfField.length; i++) {
-				txfField[i].setText("");
-			}
+        } else if (e.getSource() == btnAddEmployee) { //*
+ 
+            Employee emp = new Employee(txfEmpField[0].getText(),
+            		Integer.parseInt(txfEmpField[1].getText()), txfEmpField[2].getText());
+            db.addEmployee(emp);
+            JOptionPane.showMessageDialog(null, "Added employee successfully!");
+            for (int i = 0; i < txfEmpField.length; i++) {
+                txfEmpField[i].setText("");
+            }
+        }else if (e.getSource() == addParkingSpace) { //**
 
-		}
-		else if (e.getSource() == addEmployee) {
-			pnlContent.removeAll();
-			pnlContent.add(createAddEmployeePnl());
-			pnlContent.revalidate();
-			this.repaint();
+            pnlContent.removeAll();
+            pnlContent.add(createAddParkingSpace());
+            pnlContent.revalidate();
+            this.repaint();
 
-		} else if (e.getSource() == btnAddEmployee) {
-			Employee emp = new Employee(Integer.parseInt(txfField[0].getText()), txfField[1].getText(),
-					Integer.parseInt(txfField[2].getText()), txfField[3].getText());
-			db.addEmployee(emp);
-			JOptionPane.showMessageDialog(null, "Added employee successfully!");
-			for (int i = 0; i < txfField.length; i++) {
-				txfField[i].setText("");
-			}
-		} else if (e.getSource() == addParkingSpace) {
+ 
+		}   else if (e.getSource() == btnAddSpace) { //**
 
-			pnlContent.removeAll();
-			pnlContent.add(createAddParkingSpace());
-			pnlContent.revalidate();
-			this.repaint();
 
-		} else if (e.getSource() == btnAddSpace) {
-				
-			ParkingSpace ps = new ParkingSpace(Integer.parseInt(txfField[0].getText()), Boolean.parseBoolean(txfField[1].getText()),
-					txfField[2].getText());
-			db.addParkingSpace(ps);;
-			JOptionPane.showMessageDialog(null, "Added parking space successfully!");
-			for (int i = 0; i < txfField.length; i++) {
-				txfField[i].setText("");
-			}
-
-		}
+            ParkingSpace ps = new ParkingSpace(Integer.parseInt(txfField[0].getText()), Boolean.parseBoolean(txfField[1].getText()),
+                    txfField[2].getText());
+            try {
+                db.addParkingSpace(ps);			    
+                JOptionPane.showMessageDialog(null, "Added parking space successfully!");
+                for (int i = 0; i < txfField.length; i++) {
+                    txfField[i].setText("");
+                }
+            }
+            catch (SQLException ee) {
+                JOptionPane.showMessageDialog(null, "Error adding Parking Space. \nMake sure the parking lot name that you entered exist");
+            }			
+        }
         else if (e.getSource() == viewEmployeesButton) 
         {
             pnlContent.removeAll();
@@ -663,11 +711,4 @@ public class SystemGUI extends JFrame implements ActionListener, TableModelListe
 
     }
 
-    @Override
-    public void tableChanged(TableModelEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    
 }
