@@ -1,5 +1,5 @@
 Unimplemented features:
 - System unable to make a visitor reservation based on time, does not do integrity checking to make sure parking spot is available 
   on specified date (Visitor Reservations only! Employee Reservations are properly tracked) or that more than 20 aren't being used at once for visitors
-- Add a Parking Lot, Add Employee, Add parking space throw errors if something isn't entered into the fields
+
 
