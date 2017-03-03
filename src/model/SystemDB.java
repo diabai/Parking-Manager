@@ -240,21 +240,16 @@ public class SystemDB {
      * @param reservation the reservation to add.
      * @return Returns true or false depending on success..
      */
-    public boolean addVisitorReservation(VisitorReservation reservation) {
+    public boolean addVisitorReservation(VisitorReservation reservation) throws SQLException {
         if (reservation == null) {
             throw new IllegalArgumentException();
         }
         String sql = "insert into visitorReservation(visitorsVehLicense, spaceNum, pLName, empNumber, `date`) values "
                 + "(?, ?, ?, ?, ?); ";
 
-        if (conn == null) {
-            try {
+        if (conn == null)
                 createConnection();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
+
 
         PreparedStatement preparedStatement = null;
         try {
@@ -277,20 +272,16 @@ public class SystemDB {
      * @param reservation the reservation to add.
      * @return Returns true or false depending on success..
      */
-    public boolean addEmployeeReservation(EmployeeReservation reservation) {
+    public boolean addEmployeeReservation(EmployeeReservation reservation) throws SQLException {
         if (reservation == null) {
             throw new IllegalArgumentException();
         }
         String sql = "insert into empReservation(vehicleLicense, rate, spaceNum, pLName, empNumber) values "
                 + "(?, ?, ?, ?, ?); ";
 
-        if (conn == null) {
-            try {
+        if (conn == null)
                 createConnection();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+
 
         PreparedStatement preparedStatement = null;
         try {
