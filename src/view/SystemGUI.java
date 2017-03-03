@@ -394,6 +394,14 @@ public class SystemGUI extends JFrame implements ActionListener {
 					} catch (IllegalArgumentException ee) {
 						JOptionPane.showMessageDialog(null, "Date incorrectly entered");
 					}
+					catch (SQLException ee)
+					{
+					    JOptionPane.showMessageDialog(null, "Failed to reserve");
+					}
+					catch (NullPointerException ee)
+                    {
+                        JOptionPane.showMessageDialog(null, "Failed to reserve");
+                    }
 				}
 			}
 
@@ -506,6 +514,14 @@ public class SystemGUI extends JFrame implements ActionListener {
 				} catch (NumberFormatException ee) {
 					JOptionPane.showMessageDialog(null, "Failed to reserve the spot; rate format is incorrect");
 				}
+				catch (SQLException ee)
+                {
+                    JOptionPane.showMessageDialog(null, "Failed to reserve");
+                }
+				catch (NullPointerException ee)
+                {
+                    JOptionPane.showMessageDialog(null, "Failed to reserve");
+                }
 
 			}
 
