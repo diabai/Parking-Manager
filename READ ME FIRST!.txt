@@ -1,5 +1,5 @@
-Unimplemented features:
-- System unable to make a visitor reservation based on time, does not do integrity checking to make sure parking spot is available 
-  on specified date (Visitor Reservations only! Employee Reservations are properly tracked) or that more than 20 aren't being used in one day for visitors
+This program is an implementation of a company's staff parking lot system using SQL and Java.
+
+
 
 
