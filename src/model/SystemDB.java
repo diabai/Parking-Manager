@@ -13,7 +13,7 @@ import java.util.Properties;
 
 /**
  * Medium through which SQL database can be accessed.
- * @author Dema and Ibrahim
+ * @author Ibrahim Diabate
  * @version 2.28.2017
  */
 public class SystemDB {
