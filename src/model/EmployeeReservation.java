@@ -2,7 +2,7 @@ package model;
 
 /** 
  * Contains information about an employee's parking reservation.
- * @author Dema
+ * @author Ibrahim Diabate
  * @version 2.28.2017
  */
 public class EmployeeReservation {
