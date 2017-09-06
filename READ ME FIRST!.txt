@@ -1,5 +1,30 @@
-This program is an implementation of a company's staff parking lot system using SQL and Java.
+The goal of this project was to develop a company's parking lot monitoring system using mySQL and Java.
+I used Java's Swing to create a user-friendly interface intended to be used by the company's officials, Java's JDBC API to control the querying of data to and from a database and mySQL to create tables and set constraints where needed.
 
+Employees of the company are the main users of the lot, however, various data is collected by the software, whether the employee's parking stall is reversed or not. 
+
+The application tracks the following information about each parking lot:
+
+Name
+Location
+Capacity 
+Number of floors
+
+Monitoring of each parking stall is also in effect to ensure that the use of the parking lot follows guidelines specified by
+the company's officials. The following information is tracked for each parking stall: 
+
+Stall number
+Whether it is covered or not
+The parking lot the stall belongs to
+
+
+Visitors are also able to park their car into the parking lot as long as they are sponsored by an employee.
+The following information is recorded for each visitor:
+
+The visitor's license plate number
+The parking stall number
+The id number of the employee supervising the visit
+Date of the visit
 
 
 
