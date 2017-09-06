@@ -18,8 +18,8 @@ import java.util.Properties;
  */
 public class SystemDB {
     
-    private static String userName = "demyan15"; //Change to yours
-    private static String password = "ununItHo";
+    private static String userName = "****"; // Your uwnetID
+    private static String password = "****"; // mySQL password
     private static String serverName = "cssgate.insttech.washington.edu";
     private static Connection conn;
     
