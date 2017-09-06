@@ -6,7 +6,8 @@ your own UWnet Id and mySQLPassword to use my schema, into the SystemDB file und
 
 
 
-Employees of the company are the main users of the lot, however, various data is collected by the software, whether the employee's parking stall is reversed or not. 
+Employees of the company are the main users of the lot, however, various data is collected by the software, 
+whether the employee's parking stall is reversed or not. 
 
 The application tracks the following information about each parking lot:
 
