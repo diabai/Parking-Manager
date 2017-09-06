@@ -1,5 +1,9 @@
 The goal of this project was to develop a company's parking lot monitoring system using mySQL and Java.
 I used Java's Swing to create a user-friendly interface intended to be used by the company's officials, Java's JDBC API to control the querying of data to and from a database and mySQL to create tables and set constraints where needed.
+The database was hosted on the UW's servers, and you would need to enter your own UWnet Id and mySQLPassword to use my schema
+into the SystemDB file under src/model.
+
+
 
 Employees of the company are the main users of the lot, however, various data is collected by the software, whether the employee's parking stall is reversed or not. 
 
